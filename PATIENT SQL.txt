@@ -1,0 +1,100 @@
+Physician (reg_no, name, tel_no, city)
+Patient (p_name, street, city)
+visit(p_name, reg_no, date_of _visit, fees)
+1.	Create tables and insert values
+2.	delete entry of p_name ‘Dipak’
+3.	Get the patient details of ‘Nashik’ city
+4.	Count number of physician of ‘Mumbai’
+5.	Display a list of p_name in ascending order
+6.	Get the patient name and fees, who paid fees > 5000
+7.	Find the name and city of patient who visited physician on 13th july 2017
+8.	Get the name of the physician and no of patient visited to him
+9.	Get date wise fees collected
+10.	 Display a Physician names who treated  ‘Mina’
+
+
+CREATE TABLE Physician (
+    reg_no INT PRIMARY KEY,
+    name VARCHAR(50),
+    tel_no VARCHAR(20),
+    city VARCHAR(50)
+);
+
+CREATE TABLE Patient (
+    p_name VARCHAR(50) PRIMARY KEY,
+    street VARCHAR(100),
+    city VARCHAR(50)
+);
+
+CREATE TABLE Visit (
+    p_name VARCHAR(50),
+    reg_no INT,
+    date_of_visit DATE,
+    fees DECIMAL(10, 2),
+    FOREIGN KEY (p_name) REFERENCES Patient(p_name),
+    FOREIGN KEY (reg_no) REFERENCES Physician(reg_no)
+);
+
+INSERT INTO Physician (reg_no, name, tel_no, city)
+VALUES (1, 'Dr. Smith', '1234567890', 'Mumbai'),
+       (2, 'Dr. Patel', '9876543210', 'Nashik'),
+       (3, 'Dr. Gupta', '1112223333', 'Mumbai');
+
+INSERT INTO Patient (p_name, street, city)
+VALUES ('Alice', '123 Main St', 'Mumbai'),
+       ('Bob', '456 Elm St', 'Nashik'),
+       ('Mina', '789 Oak St', 'Mumbai');
+
+INSERT INTO Visit (p_name, reg_no, date_of_visit, fees)
+VALUES ('Alice', 1, '2017-07-13', 3000),
+       ('Bob', 2, '2017-07-13', 6000),
+       ('Mina', 3, '2017-07-14', 7000);
+-------------------
+1]
+DELETE FROM Patient WHERE p_name = 'Dipak';
+----------------------
+2]
+SELECT * FROM Patient WHERE city = 'Nashik';
+
+-----------------------
+3]
+SELECT COUNT(*) AS num_physicians FROM Physician WHERE city = 'Mumbai';
+
+------------------------
+4]
+SELECT p_name FROM Patient ORDER BY p_name ASC;
+
+-----------------------
+5]
+SELECT p_name, fees FROM Visit WHERE fees > 5000;
+
+------------------------
+6]
+SELECT p.p_name, p.city
+FROM Patient p
+INNER JOIN Visit v ON p.p_name = v.p_name
+WHERE v.date_of_visit = '2017-07-13';
+
+------------------------
+7]
+SELECT ph.name AS physician_name, COUNT(v.p_name) AS num_patients_visited
+FROM Physician ph
+LEFT JOIN Visit v ON ph.reg_no = v.reg_no
+GROUP BY ph.name;
+
+-----------------------
+8]
+SELECT date_of_visit, SUM(fees) AS total_fees_collected
+FROM Visit
+GROUP BY date_of_visit;
+
+------------------------
+9]
+SELECT ph.name AS physician_name
+FROM Physician ph
+INNER JOIN Visit v ON ph.reg_no = v.reg_no
+WHERE v.p_name = 'Mina';
+
+-----------------------
+
+

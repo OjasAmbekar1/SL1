@@ -1,0 +1,109 @@
+
+Consider the following schema
+account(acc-no,branch-name,balance)
+depositor(cust-name,acc-no)
+borrower (cust-name, loan-no)
+loan (loan - no, branch - name, amount)
+Write following queries using SQL
+1.	Create tables using proper primary keys
+2.	Update information of particular customer
+3.	Find the customers having loan less than 1 lac
+4.	Display account number and customer name starting with ‘P’
+5.	Display name of the depositor with balance
+6.	Find names of all customers who have a loan at the ‘Redwood branch’.
+7.	Find all customers who have an account and loan or both.
+8.	Find all customers who do not have loan
+9.	Find average account balance at each branch.
+10.	Find the name of borrower having maximum loan amount
+
+
+
+-- 1. Create tables using proper primary keys
+
+CREATE TABLE account (
+    acc_no INT PRIMARY KEY,
+    branch_name VARCHAR(50),
+    balance DECIMAL(10, 2)
+);
+
+CREATE TABLE depositor (
+    cust_name VARCHAR(50),
+    acc_no INT,
+    PRIMARY KEY (cust_name, acc_no),
+    FOREIGN KEY (acc_no) REFERENCES account(acc_no)
+);
+
+CREATE TABLE borrower (
+    cust_name VARCHAR(50),
+    loan_no INT,
+    PRIMARY KEY (cust_name, loan_no)
+);
+
+CREATE TABLE loan (
+    loan_no INT PRIMARY KEY,
+    branch_name VARCHAR(50),
+    amount DECIMAL(10, 2)
+);
+
+-- 2. Update information of a particular customer
+
+UPDATE depositor
+SET acc_no = new_acc_no
+WHERE cust_name = 'specific_customer_name';
+
+-- 3. Find customers having a loan less than 1 lac
+
+SELECT cust_name
+FROM borrower b
+JOIN loan l ON b.loan_no = l.loan_no
+WHERE l.amount < 100000;
+
+-- 4. Display account number and customer name starting with 'P'
+
+SELECT d.acc_no, d.cust_name
+FROM depositor d
+WHERE d.cust_name LIKE 'P%';
+
+-- 5. Display the name of the depositor with balance
+
+SELECT d.cust_name, a.balance
+FROM depositor d
+JOIN account a ON d.acc_no = a.acc_no;
+
+-- 6. Find names of all customers who have a loan at the 'Redwood branch'
+
+SELECT DISTINCT b.cust_name
+FROM borrower b
+JOIN loan l ON b.loan_no = l.loan_no
+WHERE l.branch_name = 'Redwood branch';
+
+-- 7. Find all customers who have an account and loan or both
+
+SELECT DISTINCT d.cust_name
+FROM depositor d
+LEFT JOIN borrower b ON d.cust_name = b.cust_name
+WHERE b.cust_name IS NOT NULL
+UNION
+SELECT DISTINCT b.cust_name
+FROM borrower b
+LEFT JOIN depositor d ON b.cust_name = d.cust_name
+WHERE d.cust_name IS NOT NULL;
+
+-- 8. Find all customers who do not have a loan
+
+SELECT d.cust_name
+FROM depositor d
+WHERE d.cust_name NOT IN (SELECT DISTINCT cust_name FROM borrower);
+
+-- 9. Find the average account balance at each branch
+
+SELECT branch_name, AVG(balance) AS avg_balance
+FROM account
+GROUP BY branch_name;
+
+-- 10. Find the name of the borrower having the maximum loan amount
+
+SELECT b.cust_name
+FROM borrower b
+JOIN loan l ON b.loan_no = l.loan_no
+WHERE l.amount = (SELECT MAX(amount) FROM loan);

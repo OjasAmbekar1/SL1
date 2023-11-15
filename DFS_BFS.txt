@@ -1,0 +1,41 @@
+from collections import deque
+
+def create_graph():
+    graph = {}
+    vertices = int(input("Enter the number of vertices: "))
+    
+    for i in range(vertices):
+        neighbors = list(map(int, input(f"Enter neighbors for vertex {i}: ").split()))
+        graph[i] = neighbors
+    return graph
+
+def dfs(graph, v, visited):
+    visited[v] = True
+    print(v, end=' ')
+
+    for neighbor in graph[v]:
+        if not visited[neighbor]:
+            dfs(graph, neighbor, visited)
+
+def bfs(graph, v):
+    visited = [False] * len(graph)
+    queue = deque() 
+    queue.append(v)
+    visited[v] = True
+
+    while queue:
+        v = queue.popleft()
+        print(v, end=' ')
+
+        for neighbor in graph[v]:
+            if not visited[neighbor]:
+                queue.append(neighbor)
+                visited[neighbor] = True
+
+graph = create_graph()
+v = int(input("Enter the starting vertex: "))
+
+print("DFS:")
+dfs(graph, v, [False] * len(graph))
+print("\nBFS:")
+bfs(graph, v)

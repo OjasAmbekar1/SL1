@@ -1,0 +1,15 @@
+1: Go to files
+2: other locations
+3: computer
+4: var
+5: lib
+6: mysql-files
+7: password:admin
+8: create folder
+9: properties
+10: give permissions
+11: go to terminal
+12: sudo mysql
+13: show databases
+14: show tables;
+15: select * into outfile '/var/lib/mysql-files/folder name/give text file name.txt' from tablename;

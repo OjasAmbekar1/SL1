@@ -1,0 +1,71 @@
+class NQueens:
+    def __init__(self, n):
+        self.n = n
+        self.board = [-1] * n
+
+    def is_safe(self, row, col):
+        for i in range(row):
+            if (
+                self.board[i] == col
+                or self.board[i] - i == col - row
+                or self.board[i] + i == col + row
+            ):
+                return False
+        return True
+
+    def print_solution(self):
+        for i in range(self.n):
+            row_str = ""
+            for j in range(self.n):
+                if self.board[i] == j:
+                    row_str += "q "
+                else:
+                    row_str += "- "
+            print(row_str)
+        print()
+
+    def solve_backtracking(self, row=0):
+        if row == self.n:
+            self.print_solution()
+            return
+
+        for col in range(self.n):
+            if self.is_safe(row, col):
+                self.board[row] = col
+                self.solve_backtracking(row + 1)
+                self.board[row] = -1
+
+    def solve_branch_and_bound(self, row=0):
+        if row == self.n:
+            self.print_solution()
+            return
+
+        for col in range(self.n):
+            if self.is_safe(row, col):
+                self.board[row] = col
+                self.solve_branch_and_bound(row + 1)
+                self.board[row] = -1
+
+    def solve(self, algorithm):
+        algorithm_options = {
+            "backtracking": self.solve_backtracking,
+            "branch_and_bound": self.solve_branch_and_bound
+        }
+
+        selected_algorithm = algorithm_options.get(algorithm)
+        if selected_algorithm:
+            print(f"Solving N-Queens using {algorithm.replace('_', ' ').title()}:")
+            selected_algorithm()
+        else:
+            print("Invalid algorithm specified.")
+
+if __name__ == "__main__":
+    try:
+        n_queens_size = int(input("Enter the number of queens: "))
+        algorithm = input("Enter the algorithm (backtracking/branch_and_bound): ").lower()
+
+        n_queens = NQueens(n_queens_size)
+        n_queens.solve(algorithm)
+
+    except ValueError:
+        print("Please enter a valid integer for the number of queens.")

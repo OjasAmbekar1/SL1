@@ -1,0 +1,66 @@
+/*
+Write a PL/SQL code to calculate Gross and net salary of the employee
+Employee (Empid, Name, Basic salary, type). Type may be Permanent or temporary.
+For Permanent employees following is the calculation for salary
+DA - 15% of Basic salary
+HRA - 12% of basic salary (if HRA is > 20000 then it will be considered as 20000 only)
+Calculate Gross salary by adding DA and HRA
+Deductions are 
+Income tax -2000 Rs
+Net salary= Gross Salary - Deductions
+For Temporary Only basic salary and deductions are there 
+Prepare a salary table for all 
+*/
+
+SET SERVEROUTPUT ON;
+
+CREATE TABLE Employee (
+    Empid INT PRIMARY KEY,
+    Name VARCHAR(20),
+    Basic_salary INT,
+    Type VARCHAR(20)
+);
+
+CREATE TABLE Salary (
+    Empid INT,
+    Basic_salary INT,
+    Gross_salary INT,
+    Net_salary INT
+);
+
+INSERT INTO Employee VALUES (101, 'Parimal', 20000, 'Permanent');
+INSERT INTO Employee VALUES (102, 'Saish', 21000, 'Permanent');
+
+CREATE OR REPLACE PROCEDURE salary_count(emp_id INT)
+IS
+    emp_type VARCHAR(15);
+    Basic_salary INT;
+    DA INT;
+    HRA INT;
+    Net_salary INT;
+    Income_tax INT;
+    Gross_Salary INT;
+    Deduction INT;
+BEGIN
+    SELECT Basic_salary, Type INTO Basic_salary, emp_type FROM Employee WHERE Empid = emp_id;
+
+    IF emp_type = 'Permanent' THEN
+        Deduction := 2000;
+        DA := Basic_salary * 0.50;
+        HRA := Basic_salary * 0.12;
+        Gross_Salary := Basic_salary + DA + HRA;
+        Net_salary := Gross_Salary - Deduction;
+
+        INSERT INTO Salary VALUES (emp_id, Basic_salary, Gross_Salary, Net_salary);
+    END IF;
+END;
+/
+
+SET SERVEROUTPUT ON;
+
+EXEC salary_count(101);
+EXEC salary_count(102);
+
+SELECT * FROM Employee;
+SELECT * FROM Salary;
+
